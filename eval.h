@@ -152,9 +152,22 @@ static uintmax_t eval_exponention(char const *cs, char const **csp, uintmax_t v[
 		case '<':
 			switch(*(cs+1)) {
 			case '<':
+				switch(*(cs+2)) {
+				case '>':
+					r = eval_unary(cs + 3, &cs, v, e, eval) % (sizeof(l) * CHAR_BIT);
+					l = (l << r) | (l >> ((sizeof(l) * CHAR_BIT) - r));
+					continue;
+				}
 				r = eval_unary(cs + 2, &cs, v, e, eval);
 				l = r < (sizeof(l) * CHAR_BIT) ? l << r : 0;
 				continue;
+			case '>':
+				switch(*(cs+2)) {
+				case '>':
+					r = eval_unary(cs + 3, &cs, v, e, eval) % (sizeof(l) * CHAR_BIT);
+					l = (l << ((sizeof(l) * CHAR_BIT) - r)) | (l >> r);
+					continue;
+				}
 			}
 			return l;
 		case '>':
